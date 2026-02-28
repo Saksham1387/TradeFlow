@@ -1,0 +1,111 @@
+import {
+  SUPPORTED_ASSESTS,
+  type ActionCredentials,
+  type PriceTriggerNodeMetadata,
+  type TimerTriggerNodeMetadata,
+  type TradingMetadata,
+} from "../metadata";
+
+export type FieldDescriptor =
+  | { type: "number"; key: string; label: string; placeholder?: string }
+  | { type: "select"; key: string; label: string; options: string[] };
+
+export type TriggerDefinition<T> = {
+  id: string;
+  title: string;
+  description: string;
+  defaultMetadata: T;
+  fields: FieldDescriptor[];
+};
+
+export type AnyTriggerDefinition =
+  | TriggerDefinition<TimerTriggerNodeMetadata>
+  | TriggerDefinition<PriceTriggerNodeMetadata>;
+
+export const SUPPORTED_TRIGGERS: AnyTriggerDefinition[] = [
+  {
+    id: "timer-trigger",
+    title: "Timer",
+    description: "Run this every x seconds",
+    defaultMetadata: { time: 3600 } satisfies TimerTriggerNodeMetadata,
+    fields: [
+      { type: "number", key: "time", label: "Interval (seconds)", placeholder: "e.g. 3600" },
+    ],
+  },
+  {
+    id: "price-trigger",
+    title: "Price Trigger",
+    description: "Run this when the price is an exact amount",
+    defaultMetadata: { assest: SUPPORTED_ASSESTS[0]!, amount: 0 } satisfies PriceTriggerNodeMetadata,
+    fields: [
+      { type: "select", key: "assest", label: "Asset", options: SUPPORTED_ASSESTS },
+      { type: "number", key: "amount", label: "Target Price", placeholder: "e.g. 50000" },
+    ],
+  },
+];
+
+
+export type CredentialDescriptor = {
+  key: keyof ActionCredentials;
+  label: string;
+  placeholder?: string;
+};
+
+export type ActionDefinition<T> = {
+  id: string;
+  title: string;
+  description: string;
+  defaultMetadata: T;
+  defaultCredentials: ActionCredentials;
+  fields: FieldDescriptor[];
+  credentials?: CredentialDescriptor[];
+};
+
+export type AnyActionDefinition = ActionDefinition<TradingMetadata>;
+
+const DEFAULT_TRADING_METADATA: TradingMetadata = {
+  type: "LONG",
+  qty: 0,
+  symbol: SUPPORTED_ASSESTS as unknown as typeof SUPPORTED_ASSESTS,
+};
+
+const DEFAULT_CREDENTIALS: ActionCredentials = { apiKey: "" };
+
+const TRADING_FIELDS: FieldDescriptor[] = [
+  { type: "select", key: "symbol", label: "Asset", options: SUPPORTED_ASSESTS },
+  { type: "number", key: "qty", label: "Quantity", placeholder: "Enter quantity" },
+  { type: "select", key: "type", label: "Direction", options: ["LONG", "SHORT"] },
+];
+
+const API_KEY_CREDENTIAL: CredentialDescriptor[] = [
+  { key: "apiKey", label: "API Key", placeholder: "Enter your API key" },
+];
+
+export const SUPPORTED_ACTIONS: AnyActionDefinition[] = [
+  {
+    id: "lighter",
+    title: "Lighter",
+    description: "Place a trade on Lighter",
+    defaultMetadata: DEFAULT_TRADING_METADATA,
+    defaultCredentials: DEFAULT_CREDENTIALS,
+    fields: TRADING_FIELDS,
+    credentials: API_KEY_CREDENTIAL,
+  },
+  {
+    id: "hyper-liquid",
+    title: "Hyper Liquid",
+    description: "Place a trade on Hyper Liquid",
+    defaultMetadata: DEFAULT_TRADING_METADATA,
+    defaultCredentials: DEFAULT_CREDENTIALS,
+    fields: TRADING_FIELDS,
+  },
+  {
+    id: "backpack",
+    title: "Backpack",
+    description: "Place a trade on Backpack",
+    defaultMetadata: DEFAULT_TRADING_METADATA,
+    defaultCredentials: DEFAULT_CREDENTIALS,
+    fields: TRADING_FIELDS,
+    credentials: API_KEY_CREDENTIAL,
+  },
+];
