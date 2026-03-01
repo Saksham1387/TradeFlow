@@ -6,6 +6,7 @@ import {
   getWorkflow,
   getWorkflows,
   getExecutions,
+  getGoogleAuthStatus,
 } from "../api/client";
 
 export const useSignup = () => {
@@ -49,5 +50,12 @@ export const useGetExecutions = (workflowId: string) => {
     queryKey: ["executions", workflowId],
     queryFn: () => getExecutions(workflowId),
     enabled: !!workflowId,
+  });
+};
+
+export const useGoogleAuthStatus = () => {
+  return useQuery({
+    queryKey: ["google-auth-status"],
+    queryFn: getGoogleAuthStatus,
   });
 };

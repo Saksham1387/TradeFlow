@@ -1,6 +1,8 @@
 import {
   SUPPORTED_ASSESTS,
   type ActionCredentials,
+  type GmailActionMetadata,
+  type GmailCredentials,
   type PriceTriggerNodeMetadata,
   type TimerTriggerNodeMetadata,
   type TradingMetadata,
@@ -8,6 +10,7 @@ import {
 
 export type FieldDescriptor =
   | { type: "number"; key: string; label: string; placeholder?: string }
+  | { type: "string"; key: string; label: string; placeholder?: string }
   | { type: "select"; key: string; label: string; options: string[] };
 
 export type TriggerDefinition<T> = {
@@ -67,28 +70,34 @@ export const SUPPORTED_TRIGGERS: AnyTriggerDefinition[] = [
   },
 ];
 
-export type CredentialDescriptor = {
-  key: keyof ActionCredentials;
-  label: string;
-  placeholder?: string;
-};
+export type CredentialDescriptor =
+  | { type: "field"; key: keyof ActionCredentials; label: string; placeholder?: string }
+  | { type: "oauth"; provider: "google"; scopes: string[] };
 
-export type ActionDefinition<T> = {
+export type ActionDefinition<T,C = ActionCredentials | GmailCredentials> = {
   id: string;
   title: string;
   description: string;
   defaultMetadata: T;
-  defaultCredentials: ActionCredentials;
+  defaultCredentials: C;
   fields: FieldDescriptor[];
   credentials?: CredentialDescriptor[];
 };
 
-export type AnyActionDefinition = ActionDefinition<TradingMetadata>;
+export type AnyActionDefinition = ActionDefinition<
+  TradingMetadata | GmailActionMetadata
+>;
 
 const DEFAULT_TRADING_METADATA: TradingMetadata = {
   type: "LONG",
   qty: 0,
   symbol: SUPPORTED_ASSESTS as unknown as typeof SUPPORTED_ASSESTS,
+};
+
+const DEFAULT_GMAIL_NODE_METADATA: GmailActionMetadata = {
+  content: "",
+  subject: "",
+  sendTo:""
 };
 
 const DEFAULT_CREDENTIALS: ActionCredentials = { apiKey: "" };
@@ -109,8 +118,30 @@ const TRADING_FIELDS: FieldDescriptor[] = [
   },
 ];
 
+
+const GMAIL_ACTION_FIELDS: FieldDescriptor[] = [
+  {
+    type: "string",
+    key: "subject",
+    label: "Subject",
+    placeholder: "Enter the Subject",
+  },
+  {
+    type: "string",
+    key: "content",
+    label: "Content",
+    placeholder: "Enter the content of the email",
+  },
+  {
+    type: "string",
+    key: "sendTo",
+    label: "Send To",
+    placeholder: "Enter the email to send to",
+  }
+]
+
 const API_KEY_CREDENTIAL: CredentialDescriptor[] = [
-  { key: "apiKey", label: "API Key", placeholder: "Enter your API key" },
+  { type:"field", key: "apiKey", label: "API Key", placeholder: "Enter your API key" },
 ];
 
 export const SUPPORTED_ACTIONS: AnyActionDefinition[] = [
@@ -122,6 +153,15 @@ export const SUPPORTED_ACTIONS: AnyActionDefinition[] = [
     defaultCredentials: DEFAULT_CREDENTIALS,
     fields: TRADING_FIELDS,
     credentials: API_KEY_CREDENTIAL,
+  },
+  {
+    id: "gmail-action",
+    title: "Gmail",
+    description: "Send Email to a specific email",
+    defaultMetadata: DEFAULT_GMAIL_NODE_METADATA,
+    fields: GMAIL_ACTION_FIELDS,
+    defaultCredentials: { accessToken: "", refreshToken: "" } satisfies GmailCredentials,
+    credentials: [{ type: "oauth", provider: "google", scopes: ["https://www.googleapis.com/auth/gmail.send"] }],
   },
   {
     id: "hyper-liquid",

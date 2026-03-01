@@ -58,3 +58,6 @@ export const getWorkflows = () =>
 
 export const getExecutions = (workflowId: string) =>
   apiClient<{ data: { executions: any[] } }>(`/executions/${workflowId}`);
+
+export const getGoogleAuthStatus = () =>
+  apiClient<{ data: { oauth: boolean } }>("/auth/google/status");

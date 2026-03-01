@@ -1,5 +1,6 @@
 import type { EdgeDocument } from "common/types";
 import { executeLighterNode } from "./executors/lighter-executor";
+import { executeGmailAction } from "./executors/gmail-executor";
 
 type NodeDocument = {
   id: string;
@@ -21,20 +22,23 @@ type NodeDocument = {
     | undefined;
 };
 
-export async function execute(nodes: NodeDocument[], edges: EdgeDocument[]) {
+export async function execute(userId:string,nodes: NodeDocument[], edges: EdgeDocument[]) {
   const trigger = nodes.find((x) => x.data?.kind === "TRIGGER");
   if (!trigger) {
     return;
   }
 
-  await executeRecursive(trigger.id, nodes, edges);
+  await executeRecursive(userId,trigger.id, nodes, edges);
 }
 
 async function executeRecursive(
+  userId:string,
   sourceId: string,
   nodes: NodeDocument[],
   edges: EdgeDocument[],
 ) {
+
+
   const nodesToExecute = edges
     .filter(({ source, target }) => source == sourceId)
     .map(({ target }) => target);
@@ -52,10 +56,18 @@ async function executeRecursive(
             node.data?.metadata.qty,
             node.data?.metadata.type,
           );
+
+        case "gmail-action":
+          executeGmailAction(
+            node.data?.metadata.sendTo,
+            node.data?.metadata.content,
+            node.data?.metadata.subject,
+            userId
+        );
       }
 
       await Promise.all(
-        nodesToExecute.map((id) => executeRecursive(id, nodes, edges)),
+        nodesToExecute.map((id) => executeRecursive(userId,id, nodes, edges)),
       );
     }),
   );

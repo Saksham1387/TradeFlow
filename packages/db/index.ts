@@ -81,6 +81,18 @@ const WorkflowNodesSchema = new Schema(
   },
 );
 
+
+const OAuthTokenSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  provider: {
+    type:String,
+    enum:["GOOGLE"]
+  },           
+  accessToken: String,
+  refreshToken: String,
+  expiresAt: Date,
+});
+
 const WorkflowSchema = new Schema({
   userId: {
     type: mongoose.Types.ObjectId,
@@ -133,3 +145,4 @@ const ExecutionSchema = new Schema({
 export const UserModel = mongoose.model("Users", UserSchema);
 export const WorkFlowModel = mongoose.model("Workflows", WorkflowSchema);
 export const ExecutionModel = mongoose.model("Executions", ExecutionSchema);
+export const OauthTokenModel = mongoose.model("OauthToken", OAuthTokenSchema);

@@ -36,8 +36,7 @@ async function main() {
               startTime: new Date(),
             });
 
-            console.log("nnfiusdhi");
-            await execute(workflow.nodes, workflow.edges);
+            await execute(workflow.userId.toString(),workflow.nodes, workflow.edges);
 
             execution.status = "SUCCESS";
             execution.endTime = new Date();

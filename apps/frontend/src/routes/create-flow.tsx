@@ -16,6 +16,7 @@ import { ActionSheet } from "@/components/ action-sheet";
 import { LighterTradeNode } from "@/components/nodes/actions/lighter";
 import { BackpackTradeNode } from "@/components/nodes/actions/backpack";
 import { HyperLiquidTradeNode } from "@/components/nodes/actions/hyper-liquid";
+import { GmailActionNode } from "@/components/nodes/actions/gmail";
 import { useCreateWorkflow, useGetWorkflow } from "@/api/hooks";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
@@ -26,13 +27,15 @@ const nodeTypes = {
   lighter: LighterTradeNode,
   backpack: BackpackTradeNode,
   "hyper-liquid": HyperLiquidTradeNode,
+  "gmail-action": GmailActionNode,
 };
 export type Nodekind =
   | "price-trigger"
   | "timer-trigger"
   | "hyperliquid"
   | "backpack"
-  | "lighter";
+  | "lighter"
+  | "gmail-action";
 
 export type NodeMetadata = any;
 
