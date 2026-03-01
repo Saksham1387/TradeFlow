@@ -1,5 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { signup, signin, createWorkflow, getWorkflow, getWorkflows } from "../api/client";
+import {
+  signup,
+  signin,
+  createWorkflow,
+  getWorkflow,
+  getWorkflows,
+  getExecutions,
+} from "../api/client";
 
 export const useSignup = () => {
   return useMutation({
@@ -34,5 +41,13 @@ export const useGetWorkflows = () => {
   return useQuery({
     queryKey: ["workflows"],
     queryFn: getWorkflows,
+  });
+};
+
+export const useGetExecutions = (workflowId: string) => {
+  return useQuery({
+    queryKey: ["executions", workflowId],
+    queryFn: () => getExecutions(workflowId),
+    enabled: !!workflowId,
   });
 };

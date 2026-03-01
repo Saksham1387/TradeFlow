@@ -1,5 +1,5 @@
 import { CreateWorkflowSchema, SigninSchema, SignupSchema } from "common/types";
-import { UserModel, WorkFlowModel } from "db/client";
+import { ExecutionModel, UserModel, WorkFlowModel } from "db/client";
 import express from "express";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -107,7 +107,7 @@ app.post("/workflow", middleware, async (req, res) => {
   }
 });
 
-app.get("/workflows",middleware , async(req ,res ) => {
+app.get("/workflows", middleware, async (req, res) => {
   try {
     const existingworkflows = await WorkFlowModel.find({
       userId: req.userId,
@@ -131,9 +131,7 @@ app.get("/workflows",middleware , async(req ,res ) => {
     });
     return;
   }
-})
-
-
+});
 
 app.get("/workflow/:id", middleware, async (req, res) => {
   const workflowId = req.params.id;
@@ -162,6 +160,32 @@ app.get("/workflow/:id", middleware, async (req, res) => {
   }
 });
 
-app.get("/executions/:id", middleware, async (req, res) => {});
+app.get("/executions/:id", middleware, async (req, res) => {
+  const workflowId = req.params.id;
+
+  try {
+    const executions = await ExecutionModel.find({
+      workflowId: workflowId,
+    });
+
+    if (!executions) {
+      res.status(404).json({
+        message: "Executions Not Found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      data: {
+        executions,
+      },
+    });
+  } catch (e) {
+    res.status(404).json({
+      message: "Something went wrong",
+    });
+    return;
+  }
+});
 
 app.listen(2000);

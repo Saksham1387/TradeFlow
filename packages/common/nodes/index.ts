@@ -18,6 +18,11 @@ export type TriggerDefinition<T> = {
   fields: FieldDescriptor[];
 };
 
+export type EdgeDocument = {
+  source: string;
+  id: string;
+  target: string;
+};
 export type AnyTriggerDefinition =
   | TriggerDefinition<TimerTriggerNodeMetadata>
   | TriggerDefinition<PriceTriggerNodeMetadata>;
@@ -29,21 +34,38 @@ export const SUPPORTED_TRIGGERS: AnyTriggerDefinition[] = [
     description: "Run this every x seconds",
     defaultMetadata: { time: 3600 } satisfies TimerTriggerNodeMetadata,
     fields: [
-      { type: "number", key: "time", label: "Interval (seconds)", placeholder: "e.g. 3600" },
+      {
+        type: "number",
+        key: "time",
+        label: "Interval (seconds)",
+        placeholder: "e.g. 3600",
+      },
     ],
   },
   {
     id: "price-trigger",
     title: "Price Trigger",
     description: "Run this when the price is an exact amount",
-    defaultMetadata: { assest: SUPPORTED_ASSESTS[0]!, amount: 0 } satisfies PriceTriggerNodeMetadata,
+    defaultMetadata: {
+      assest: SUPPORTED_ASSESTS[0]!,
+      amount: 0,
+    } satisfies PriceTriggerNodeMetadata,
     fields: [
-      { type: "select", key: "assest", label: "Asset", options: SUPPORTED_ASSESTS },
-      { type: "number", key: "amount", label: "Target Price", placeholder: "e.g. 50000" },
+      {
+        type: "select",
+        key: "assest",
+        label: "Asset",
+        options: SUPPORTED_ASSESTS,
+      },
+      {
+        type: "number",
+        key: "amount",
+        label: "Target Price",
+        placeholder: "e.g. 50000",
+      },
     ],
   },
 ];
-
 
 export type CredentialDescriptor = {
   key: keyof ActionCredentials;
@@ -73,8 +95,18 @@ const DEFAULT_CREDENTIALS: ActionCredentials = { apiKey: "" };
 
 const TRADING_FIELDS: FieldDescriptor[] = [
   { type: "select", key: "symbol", label: "Asset", options: SUPPORTED_ASSESTS },
-  { type: "number", key: "qty", label: "Quantity", placeholder: "Enter quantity" },
-  { type: "select", key: "type", label: "Direction", options: ["LONG", "SHORT"] },
+  {
+    type: "number",
+    key: "qty",
+    label: "Quantity",
+    placeholder: "Enter quantity",
+  },
+  {
+    type: "select",
+    key: "type",
+    label: "Direction",
+    options: ["LONG", "SHORT"],
+  },
 ];
 
 const API_KEY_CREDENTIAL: CredentialDescriptor[] = [

@@ -55,3 +55,6 @@ export const getWorkflow = (id: string) =>
 
 export const getWorkflows = () =>
   apiClient<{ data: { existingworkflows: any[] } }>("/workflows");
+
+export const getExecutions = (workflowId: string) =>
+  apiClient<{ data: { executions: any[] } }>(`/executions/${workflowId}`);
